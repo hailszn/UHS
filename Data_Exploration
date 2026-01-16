@@ -1,0 +1,238 @@
+Code:
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load the dataset
+file_path = 'SOM June 2025 - Summer Project File - deidentified_Additional Data.csv'
+df_som = pd.read_csv(file_path)
+
+# Define mental health-related columns
+mental_health_cols = [
+    'Mental Disorders Due To Physiological Conditions',
+    'Mental Behavioral Disorders Due To Psychoactive Substance Use',
+    'Schizophrenia, Schizotypal, Delusional, and Other Non-Mood Disorders',
+    'Mood Disorders',
+    'Anxiety, Dissociative, Stress-related, and Somatoform Disorders',
+    'Behavioral Syndromes Associated with Physiological Disturbances and Physical Factors',
+    'Disorders of Adult Personality and Behavior',
+    'Intellectual Disabilities',
+    'Behavioral and Emotional Disorders with Onset in Childhood or Adolescence',
+    'Unspecified Mental Disorder'
+]
+
+# Filter for top 6 most frequent Gender Identities
+top_gender_identities = df_som['GenderIdentity'].value_counts().nlargest(6).index.tolist()
+
+# Calculate average (proportion) of each disorder by Gender Identity
+disorder_rates_by_gender = df_som[df_som['GenderIdentity'].isin(top_gender_identities)]
+disorder_rates_by_gender = disorder_rates_by_gender.groupby('GenderIdentity')[mental_health_cols].mean().reset_index()
+
+# Melt the dataframe for plotting
+disorder_rates_melted = disorder_rates_by_gender.melt(
+    id_vars='GenderIdentity',
+    var_name='Disorder',
+    value_name='Proportion'
+)
+
+# Plot using seaborn
+plt.figure(figsize=(15, 10))
+sns.barplot(data=disorder_rates_melted, x='Disorder', y='Proportion', hue='GenderIdentity')
+plt.title('Prevalence of Specific Mental Health Disorders by Gender Identity')
+plt.xticks(rotation=90)
+plt.ylabel('Proportion of Individuals Affected')
+plt.tight_layout()
+plt.show()
+
+
+Analysis:
+Genderqueer individuals have the highest rates of several mental health disorders, especially mood disorders and anxiety-related conditions.
+
+
+People who chose not to disclose their gender identity also show consistently high prevalence across most mental health categories.
+
+
+Females (based on gender identity) tend to have higher rates of mental health issues compared to males, particularly in mood and stress-related disorders.
+
+
+Disorders like personality disorders, substance-related disorders, and behavioral syndromes are also more common in non-binary and undisclosed groups than in traditional male/female identities.
+
+
+Overall, the data suggests that non-binary, gender-diverse, and undisclosed groups experience a disproportionately higher burden of mental health issues, which may point to underlying social, cultural, or systemic stressors.
+2. 
+
+Code:
+# Proportion of any mental health issue by SexAssignedAtBirth
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Load data
+df = pd.read_csv('SOM June 2025 - Summer Project File - deidentified_Additional Data.csv')
+
+# Define relevant columns
+mental_health_cols = [
+    'Mental Disorders Due To Physiological Conditions',
+    'Mental Behavioral Disorders Due To Psychoactive Substance Use',
+    'Schizophrenia, Schizotypal, Delusional, and Other Non-Mood Disorders',
+    'Mood Disorders',
+    'Anxiety, Dissociative, Stress-related, and Somatoform Disorders',
+    'Behavioral Syndromes Associated with Physiological Disturbances and Physical Factors',
+    'Disorders of Adult Personality and Behavior',
+    'Intellectual Disabilities',
+    'Behavioral and Emotional Disorders with Onset in Childhood or Adolescence',
+    'Unspecified Mental Disorder'
+]
+
+# New column: Any mental health issue
+df['Any_Mental_Health_Issue'] = df[mental_health_cols].sum(axis=1) > 0
+
+# Group by SexAssignedAtBirth
+sex_summary = df.groupby('SexAssignedAtBirth')['Any_Mental_Health_Issue'].mean().reset_index()
+
+# Plot
+plt.figure(figsize=(8, 5))
+sns.barplot(data=sex_summary, x='SexAssignedAtBirth', y='Any_Mental_Health_Issue')
+plt.title('Proportion with Any Mental Health Issue by Sex Assigned At Birth')
+plt.ylabel('Proportion')
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+Analysis:
+Proportion= Total number of people in that groupNumber of people with ≥1 mental health diagnosis​
+Females assigned at birth have a higher proportion of reported mental health issues than males.
+
+
+Those who chose not to disclose their sex or were marked as "Uncertain" also show high prevalence, possibly due to underlying social or identity stressors.
+3. 
+
+
+
+
+Code:
+# Group by GenderIdentity
+gender_summary = df.groupby('GenderIdentity')['Any_Mental_Health_Issue'].mean().reset_index()
+
+# Focus on the top 6 most common identities
+top_genders = df['GenderIdentity'].value_counts().nlargest(6).index.tolist()
+gender_summary_top = gender_summary[gender_summary['GenderIdentity'].isin(top_genders)]
+
+# Plot
+plt.figure(figsize=(10, 5))
+sns.barplot(data=gender_summary_top, x='GenderIdentity', y='Any_Mental_Health_Issue')
+plt.title('Proportion with Any Mental Health Issue by Gender Identity')
+plt.ylabel('Proportion')
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+
+Analysis: 
+Proportion= Total number of people in that groupNumber of people with ≥1 mental health diagnosis​
+
+Genderqueer individuals have the highest prevalence of mental health issues among all identity groups.
+
+
+People who chose not to disclose their gender identity also show significantly elevated rates.
+
+
+Females again have higher rates than males, while males report the lowest among the top six identities.
+4. 
+Code:
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load your dataset
+df = pd.read_csv("SOM June 2025 - Summer Project File - deidentified_Additional Data.csv")
+
+# Define relevant mental health columns
+mental_health_cols = [
+    'Mental Disorders Due To Physiological Conditions',
+    'Mental Behavioral Disorders Due To Psychoactive Substance Use',
+    'Schizophrenia, Schizotypal, Delusional, and Other Non-Mood Disorders',
+    'Mood Disorders',
+    'Anxiety, Dissociative, Stress-related, and Somatoform Disorders',
+    'Behavioral Syndromes Associated with Physiological Disturbances and Physical Factors',
+    'Disorders of Adult Personality and Behavior',
+    'Intellectual Disabilities',
+    'Behavioral and Emotional Disorders with Onset in Childhood or Adolescence',
+    'Unspecified Mental Disorder'
+]
+
+# Create binary column for having any mental health issue
+df['Any_Mental_Health_Issue'] = df[mental_health_cols].sum(axis=1) > 0
+
+# Define key social factors to analyze
+social_factors = [
+    'Transportation Needs',
+    'Housing Stability',
+    'Food Insecurity',
+    'Social Connections',
+    'GenderIdentity',
+    'SexualOrientation'
+]
+
+# Create a combined dataframe for plotting
+results = []
+for factor in social_factors:
+    if df[factor].nunique() <= 20:  # limit to manageable category sizes
+        temp = df.groupby(factor)['Any_Mental_Health_Issue'].mean().reset_index()
+        temp['Factor'] = factor
+        temp.columns = ['Category', 'Proportion', 'Factor']
+        results.append(temp)
+
+plot_df = pd.concat(results)
+
+# Plot
+plt.figure(figsize=(16, 8))
+sns.barplot(data=plot_df, x='Category', y='Proportion', hue='Factor')
+plt.title('Proportion with Mental Health Issues by Social Factors')
+plt.ylabel('Proportion with Any Mental Health Issue')
+plt.xticks(rotation=45, ha='right')
+plt.tight_layout()
+plt.show()
+
+
+
+Analysis:
+0 = 0% of people in that group have any diagnosed mental health issue.
+
+
+0.5 = 50% of people in that group have at least one diagnosed mental health issue.
+
+
+1 = 100% of people in that group have a mental health issue (this would be rare).
+
+ 1. Housing, Food, and Transportation Needs
+People experiencing housing instability, food insecurity, or transportation challenges have significantly higher rates of mental health issues.
+
+
+In some groups, over 50% reported a mental health condition — a clear signal that basic needs are deeply tied to mental well-being.
+
+
+ 2. Lack of Social Connections
+Individuals reporting no or weak social connections show a notably higher mental health burden.
+
+
+This supports the idea that social isolation is a major mental health risk factor.
+
+
+
+ 3. Gender Identity
+Gender-diverse groups — such as nonbinary, transgender, and "other" — consistently show higher proportions of mental health issues than binary identities (male/female).
+
+
+This points to the impact of identity-related stress, stigma, or lack of support.
+
+
+
+ 4. Sexual Orientation
+People identifying as gay, lesbian, bisexual, or queer also show elevated rates compared to heterosexual individuals.
+
+
+Again, this may reflect minority stress and lack of affirming resources.
+ Overall Takeaway:
+The data supports what many clinicians already observe — that mental health is strongly shaped by unmet social needs and identity-based challenges.
+
+
+These insights can help justify investments in preventative care, community support, and mental health resources, even when they don’t immediately drive revenue.
